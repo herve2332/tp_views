@@ -38,3 +38,35 @@ BEGIN
   WHERE ROWNUM = 1;
   RETURN oldest_worker_id;
 END GET_OLDEST_WORKER;
+
+CREATE OR REPLACE PROCEDURE SEED_DATA_WORKERS(NB_WORKERS NUMBER, FACTORY_ID NUMBER) IS
+BEGIN
+  FOR i IN 1..NB_WORKERS LOOP
+    INSERT INTO workers (worker_id, lastname, firstname, age, start_date, factory_id)
+    VALUES (
+      workers_seq.NEXTVAL,
+      'worker_l_' || workers_seq.CURRVAL,
+      'worker_f_' || workers_seq.CURRVAL,
+      TRUNC(DBMS_RANDOM.VALUE(18, 65)),
+      (SELECT TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2065-01-01','J'), TO_CHAR(DATE '2070-01-01','J'))), 'J') FROM DUAL),
+      FACTORY_ID
+    );
+  END LOOP;
+END SEED_DATA_WORKERS;
+
+
+CREATE OR REPLACE PROCEDURE ADD_NEW_ROBOT(MODEL_NAME VARCHAR2(50)) IS
+BEGIN
+  INSERT INTO robots (robot_id, model_name)
+  VALUES (robots_seq.NEXTVAL, MODEL_NAME);
+END ADD_NEW_ROBOT;
+
+CREATE OR REPLACE PROCEDURE SEED_DATA_SPARE_PARTS(NB_SPARE_PARTS NUMBER) IS
+BEGIN
+  FOR i IN 1..NB_SPARE_PARTS LOOP
+    INSERT INTO spare_parts (part_id, part_name)
+    VALUES (spare_parts_seq.NEXTVAL, 'part_' || spare_parts_seq.CURRVAL);
+  END LOOP;
+END SEED_DATA_SPARE_PARTS;
+
+
